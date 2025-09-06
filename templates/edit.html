@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}Edit Routine{% endblock %}
+
+{% block main %}
+<div class="container my-5">
+    <h2>Edit Routine: {{ routine.title }}</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="routine_title" class="form-label">Routine Title</label>
+            <input type="text" class="form-control" id="routine_title" name="routine_title" value="{{ routine.title }}" required>
+        </div>
+
+        <h4>Subjects</h4>
+        {% for rs in routine.subjects %}
+            <div class="mb-3">
+                <label class="form-label fw-bold">{{ rs.subject.name }}</label>
+                <input type="text" class="form-control" name="subject_desc_{{ rs.subject.id }}" value="{{ rs.subject.description or '' }}" placeholder="Subject description">
+            </div>
+        {% endfor %}
+
+        <hr>
+        <h5>Add New Subject</h5>
+        <div class="mb-3">
+            <label for="new_subject_name" class="form-label">Subject Name</label>
+            <input type="text" class="form-control" id="new_subject_name" name="new_subject_name" placeholder="New subject name">
+        </div>
+        <div class="mb-3">
+            <label for="new_subject_desc" class="form-label">Subject Description</label>
+            <input type="text" class="form-control" id="new_subject_desc" name="new_subject_desc" placeholder="New subject description">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('plan', id=routine.id) }}" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>
+{% endblock %}
