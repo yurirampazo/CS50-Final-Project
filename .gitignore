@@ -218,3 +218,7 @@ flask_session/
 
 # MacOS files
 .DS_Store
+
+# SQLite DB
+*.sqlite
+*.db
