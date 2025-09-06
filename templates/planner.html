@@ -34,5 +34,36 @@
             </div>
         {% endfor %}
     </div>
+    <div class="row justify-content-center"> 
+        <div class="col-auto text-center"> 
+        <button class="btn btn-primary mb-2" id="toggleForm">+ Add Routine</button> 
+            <form id="miniForm" action="/planner" method="POST" class="d-none mt-2"> 
+                    <div class="mb-2"> 
+                        <input type="text" name="routine" class="form-control" placeholder="Routine" required> 
+                    </div> 
+                    <div class="mb-2"> 
+                        <input type="text" name="subject" class="form-control" placeholder="First subject" required> 
+                    </div>
+                    <div class="mb-2"> 
+                        <input type="text" name="description" class="form-control" placeholder="Description (optional)"> 
+                    </div> 
+                <button type="submit" class="btn btn-success w-100">Send</button> 
+            </form> 
+        </div> 
+    </div>
 </div>
+<script>
+    const toggleButton = document.getElementById("toggleForm");
+    const miniForm = document.getElementById("miniForm");
+
+    toggleButton?.addEventListener("click", () => {
+        miniForm.classList.toggle("d-none");
+
+        if (miniForm.classList.contains("d-none")) {
+            toggleButton.textContent = "+ Add Routine";
+        } else {
+            toggleButton.textContent = "Back";
+        }
+    });
+</script>
 {% endblock %}
