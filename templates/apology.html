@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Apology
+{% endblock %}
+
+{% block main %}
+    <div class="d-flex flex-column align-items-center">
+        <h1 class="text-danger">{{ top }}</h1>
+
+        <img src="{{ url_for('static', filename='error.jpg') }}"
+             alt="Error"
+             class="img-thumbnail my-3"
+             style="max-width: 300px;">
+
+        <p class="text-muted fs-5">{{ bottom }}</p>
+    </div>
+{% endblock %}

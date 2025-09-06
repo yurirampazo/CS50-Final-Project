@@ -164,7 +164,7 @@ def plan():
         return apology("Routine not found or access denied", 403)
     return render_template("plan.html", routine=routine)
 
-@app.route("/edit/<int:routine_id>", methods=["GET", "POST"])
+@app.route("/plan/<int:routine_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit_routine(routine_id):
     routine = Routine.query.get(routine_id)
@@ -201,11 +201,9 @@ def edit_routine(routine_id):
     return render_template("edit.html", routine=routine)
 
 
-@app.route("/plan/delete", methods=["POST"])
-@login_required
-def delete_routine():
-    routine_id = request.args.get("id", type=int)
-
+@app.route("/plan/<int:routine_id>/delete", methods=["POST"])
+def delete_routine(routine_id):
+    
     if not routine_id:
         return apology("Missing routine ID", 400)
 
@@ -214,16 +212,23 @@ def delete_routine():
     if routine.user_id != session["user_id"]:
         return apology("Access denied", 403)
 
-    if request.form.get("_method") == "DELETE":
-        for rs in routine.subjects:
-            db.session.delete(rs)
+    for rs in routine.subjects:
+        db.session.delete(rs)
 
-        db.session.delete(routine)
-        db.session.commit()
+    db.session.delete(routine)
+    db.session.commit()
 
-        return redirect("/planner")
+    return redirect("/planner")
 
-    return apology("Invalid method", 400)
+
+@app.route("/progress")
+def progress():
+    return apology("TODO", 500)
+
+
+@app.route("/profile", methods=["POST", "GET"])
+def profile():
+    return apology("TODO", 418)
 
 
 
