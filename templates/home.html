@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block main %}
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-md-6 text-center mb-4 mb-md-0">
+            <img src="{{ url_for('static', filename='learner-cat.png') }}" alt="Placeholder Image" class="img-fluid rounded shadow">
+        </div>
+        <div class="col-md-6">
+            <h1 class="mb-3">Welcome to YuLearn Study Planner</h1>
+            <p class="mb-4">
+                Every small step counts. Here, you can plan your studies, track your progress, and celebrate every achievement.
+                Take control of your learning, stay consistent, and see how far you can go.
+                Your future self will thank you for what you do today.
+            </p>
+            {% if not session["user_id"] %}
+
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Register</a>
+            {% else %}
+                <a href="{{ url_for('planner') }}" class="btn btn-primary btn-lg">Go to Planner</a>
+            {% endif%}
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col text-center">
+            <p class="text-muted">
+                Start planning your first routine and watch your growth unfold!
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
