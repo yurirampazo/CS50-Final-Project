@@ -25,6 +25,7 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     routines = db.relationship("Routine", backref="user", lazy=True)
     study_logs = db.relationship("StudyLog", backref="user", lazy=True)
+    notes = db.relationship("Note", backref="user", lazy=True)
 
 class Routine(db.Model):
     __tablename__ = "routine"
@@ -57,6 +58,14 @@ class StudyLog(db.Model):
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     time_spent = db.Column(db.Integer, nullable=False)
     notes = db.Column(db.String)
+
+class Note(db.Model):
+    __tablename__ = "note"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    title = db.Column(db.String, nullable=False)
+    content = db.Column(db.String, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 with app.app_context():
     db.create_all()
@@ -119,7 +128,6 @@ def planner():
 
     if request.method == "POST":
         routine_title = request.form.get("routine")
-
         routineObject = Routine(title=routine_title, user_id=USER_ID)
         db.session.add(routineObject)
         db.session.commit()
@@ -172,7 +180,6 @@ def edit_routine(routine_id):
 
     if request.method == "POST":
         routine.title = request.form.get("routine_title")
-
         for rs in routine.subjects:
             desc = request.form.get(f"subject_desc_{rs.subject.id}")
             if desc is not None:
@@ -199,15 +206,13 @@ def edit_routine(routine_id):
 
     return render_template("edit.html", routine=routine)
 
-
+@login_required
 @app.route("/plan/<int:routine_id>/delete", methods=["POST"])
 def delete_routine(routine_id):
-    
     if not routine_id:
         return apology("Missing routine ID", 400)
 
     routine = Routine.query.get_or_404(routine_id)
-
     if routine.user_id != session["user_id"]:
         return apology("Access denied", 403)
 
@@ -216,20 +221,81 @@ def delete_routine(routine_id):
 
     db.session.delete(routine)
     db.session.commit()
-
     return redirect("/planner")
 
+@login_required
+@app.route("/study/<int:routine_id>", methods=["GET", "POST"])
+def study(routine_id):
+    routine = Routine.query.get_or_404(routine_id)
+    subjects = routine.subjects 
+
+    if request.method == "POST":
+        subject_id = request.form.get("subject_id")
+        time_spent = int(request.form.get("time_spent"))
+        notes = request.form.get("notes", "")
+
+        new_log = StudyLog(
+            user_id=session["user_id"],
+            subject_id=subject_id,
+            date=datetime.today().date(),
+            time_spent=time_spent,
+            notes=notes
+        )
+        db.session.add(new_log)
+        db.session.commit()
+        return redirect(url_for("planner"))
+
+    return render_template("study.html", routine=routine, subjects=subjects)
 
 @app.route("/progress")
+@login_required
 def progress():
-    return apology("TODO", 500)
+    user_id = session["user_id"]
 
+    total_minutes = db.session.query(db.func.sum(StudyLog.time_spent))\
+        .filter(StudyLog.user_id == user_id).scalar() or 0
 
-@app.route("/profile", methods=["POST", "GET"])
-def profile():
-    return apology("TODO", 418)
+    top_subjects = (
+        db.session.query(
+            Subject.name,
+            db.func.sum(StudyLog.time_spent).label("total")
+        )
+        .join(StudyLog, StudyLog.subject_id == Subject.id)
+        .filter(StudyLog.user_id == user_id)
+        .group_by(Subject.name)
+        .order_by(db.desc("total"))
+        .limit(5)
+        .all()
+    )
 
+    routines_data = (
+        db.session.query(
+            Routine.title,
+            db.func.sum(StudyLog.time_spent).label("total")
+        )
+        .join(RoutineSubject, RoutineSubject.routine_id == Routine.id)
+        .join(Subject, Subject.id == RoutineSubject.subject_id)
+        .join(StudyLog, StudyLog.subject_id == Subject.id)
+        .filter(StudyLog.user_id == user_id)
+        .group_by(Routine.title)
+        .order_by(db.desc("total"))
+        .all()
+    )
 
+    return render_template(
+        "progress.html",
+        total_minutes=total_minutes,
+        top_subjects=top_subjects,
+        routines_data=routines_data
+    )
+
+@app.route("/notes")
+@login_required
+def notes():
+    user_id = session["user_id"]
+    all_notes = Note.query.filter_by(user_id=user_id).order_by(Note.date.desc()).all()
+    study_logs_with_notes = StudyLog.query.filter_by(user_id=user_id).filter(StudyLog.notes != None).order_by(StudyLog.date.desc()).all()
+    return render_template("notes.html", notes=all_notes, study_logs=study_logs_with_notes)
 
 if __name__ == "__main__":
     app.run(debug=True)

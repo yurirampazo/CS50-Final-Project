@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}Notes{% endblock %}
+
+{% block main %}
+<div class="container my-4">
+    <h2 class="mb-4 text-center">&#128221; Your Notes</h2>
+    <div class="row justify-content-center">
+        {% for note in notes %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch">
+                <div class="card w-100">
+                    <div class="card-header bg-secondary text-white text-center">
+                        <h5 class="card-title text-truncate mb-0">{{ note.title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ note.content }}</p>
+                        <p class="text-muted fst-italic small">{{ note.date.strftime("%Y-%m-%d %H:%M") }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% for log in study_logs %}
+            {% if log.notes %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch">
+                <div class="card w-100">
+                    <div class="card-header bg-success text-white text-center">
+                        <h5 class="card-title text-truncate mb-0">&#128221; Study Note</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ log.notes }}</p>
+                        <p class="text-muted fst-italic small">{{ log.date.strftime("%Y-%m-%d") }} – {{ log.time_spent }} min</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <p class="text-center fst-italic">No notes yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

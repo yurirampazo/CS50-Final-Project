@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block title %}Study Session{% endblock %}
+
+{% block main %}
+<div class="container my-5 text-center">
+    <h2>{{ routine.title }} - Study Session</h2>
+    <p>Click "Start" when you begin studying. The timer will track your focus time.</p>
+
+    <div class="my-4">
+        <h3 id="timer">00:00</h3>
+        <div class="btn-group">
+            <button class="btn btn-success" id="startBtn">&#9654; Start</button>
+            <button class="btn btn-secondary" id="pauseBtn" disabled>&#9208; Pause</button>
+            <button class="btn btn-danger" id="resetBtn" disabled>&#128257; Reset</button>
+        </div>
+    </div>
+
+    <form method="POST" id="studyForm">
+        <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <select class="form-control" name="subject_id" id="subject" required>
+                {% for rs in subjects %}
+                    <option value="{{ rs.subject.id }}">{{ rs.subject.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="time_spent" class="form-label">Time Spent (minutes)</label>
+            <input type="number" class="form-control" name="time_spent" id="time_spent" required readonly>
+        </div>
+
+        <div class="mb-3">
+            <label for="notes" class="form-label">Notes (optional)</label>
+            <textarea class="form-control" name="notes" id="notes" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Save Study Log</button>
+    </form>
+</div>
+
+<script>
+    let timer;
+    let secondsElapsed = 0;
+    let isRunning = false;
+
+    const timerDisplay = document.getElementById("timer");
+    const startBtn = document.getElementById("startBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const timeSpentInput = document.getElementById("time_spent");
+
+    function updateDisplay() {
+        const minutes = Math.floor(secondsElapsed / 60);
+        const seconds = secondsElapsed % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        timeSpentInput.value = minutes > 0 ? minutes : 1;
+    }
+
+    function startTimer() {
+        if (!isRunning) {
+            isRunning = true;
+            timer = setInterval(() => {
+                secondsElapsed++;
+                updateDisplay();
+            }, 1000);
+            startBtn.disabled = true;
+            pauseBtn.disabled = false;
+            resetBtn.disabled = false;
+        }
+    }
+
+    function pauseTimer() {
+        clearInterval(timer);
+        isRunning = false;
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+    }
+
+    function resetTimer() {
+        clearInterval(timer);
+        isRunning = false;
+        secondsElapsed = 0;
+        updateDisplay();
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        resetBtn.disabled = true;
+    }
+
+    startBtn.addEventListener("click", startTimer);
+    pauseBtn.addEventListener("click", pauseTimer);
+    resetBtn.addEventListener("click", resetTimer);
+
+    updateDisplay();
+</script>
+{% endblock %}

@@ -29,6 +29,7 @@
                             <button type="submit" class="btn btn-outline-danger btn-sm">&#128465; Delete</button>
                         </form>
                         <a href="{{ url_for('edit_routine', routine_id=routine.id) }}" class="btn btn-outline-primary btn-sm">&#9998; Edit</a>
+                        <a href="{{ url_for('study', routine_id=routine.id) }}" class="btn btn-outline-success btn-sm">&#9654; Start</a>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}Progress{% endblock %}
+
+{% block main %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">&#128200; Your Study Progress</h2>
+
+    <div class="mb-4 text-center">
+        <h4>Total Study Time</h4>
+        {% set hours = total_minutes // 60 %}
+        {% set minutes = total_minutes % 60 %}
+        <p class="fs-4">{{ hours }}h {{ minutes }}min</p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h5>&#127942; Top 5 Subjects</h5>
+            <ul class="list-group">
+                {% for name, total in top_subjects %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        {{ loop.index }} - {{ name }}
+                        <span>{{ total }} min</span>
+                    </li>
+                {% else %}
+                    <li class="list-group-item">No data yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-md-6">
+            <h5>&#128218; Time per Routine</h5>
+            <ul class="list-group">
+                {% for title, total in routines_data %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        {{ title }}
+                        <span>{{ total }} min</span>
+                    </li>
+                {% else %}
+                    <li class="list-group-item">No data yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
