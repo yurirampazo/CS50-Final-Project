@@ -1,5 +1,5 @@
 # YuLearn – Study Tracker
-#### Video Demo:  [https://youtu.be/MDfrDW2obuA
+#### Video Demo:  https://youtu.be/MDfrDW2obuA
 #### Description:
 
 YuLearn is a web application built using Python, Flask, Javascript, HTML, CSS and Bootstrap. It functions as a study organizer that allows users to create routines, track study time, take notes, and monitor their progress visually and interactively. The app is ideal for students who want to improve their productivity and maintain a consistent study routine.
